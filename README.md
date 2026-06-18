@@ -81,6 +81,7 @@ backend/
 
 frontend/
   src/
+    animations/   anime.js hooks: useEntrance · useStaggerChildren (+ tokens)
     api/          typed fetch client (single network seam)
     components/   editor, controls, test-case, help, panels, visualizers/
     hooks/        useExecution · usePlayback · useTheme · useKeyboardShortcuts

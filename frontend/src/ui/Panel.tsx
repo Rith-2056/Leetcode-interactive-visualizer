@@ -1,5 +1,8 @@
+"use client";
+
 import { ReactNode } from "react";
 
+import { useEntrance } from "@/animations";
 import { cn } from "@/ui/cn";
 
 interface PanelProps {
@@ -13,8 +16,10 @@ interface PanelProps {
 
 /** A rounded, subtly elevated surface — the building block of the layout. */
 export function Panel({ title, action, className, bodyClassName, children }: PanelProps) {
+  const ref = useEntrance<HTMLElement>([]);
   return (
     <section
+      ref={ref}
       className={cn(
         "flex min-h-0 flex-col overflow-hidden rounded-xl border border-surface-border",
         "bg-surface/80 shadow-card backdrop-blur",

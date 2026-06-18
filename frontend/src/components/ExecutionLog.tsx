@@ -1,8 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 import type { Snapshot } from "@/types/execution";
+import { useEntrance } from "@/animations";
 
 interface ExecutionLogProps {
   snapshot: Snapshot | null;
@@ -10,18 +9,15 @@ interface ExecutionLogProps {
 
 /** The narration panel: explains what the current step does and why. */
 export function ExecutionLog({ snapshot }: ExecutionLogProps) {
+  // Re-announce the content as playback advances to the next step.
+  const ref = useEntrance<HTMLDivElement>([snapshot?.step_number ?? -1]);
+
   if (!snapshot) {
     return <p className="text-sm text-zinc-500">Step explanations will appear here.</p>;
   }
 
   return (
-    <motion.div
-      key={snapshot.step_number}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="space-y-3"
-    >
+    <div ref={ref} className="space-y-3">
       <div className="flex items-center gap-2 text-xs text-zinc-500">
         <span className="rounded bg-surface-raised px-2 py-0.5 font-mono">
           line {snapshot.current_line}
@@ -55,6 +51,6 @@ export function ExecutionLog({ snapshot }: ExecutionLogProps) {
           {snapshot.stdout}
         </pre>
       )}
-    </motion.div>
+    </div>
   );
 }

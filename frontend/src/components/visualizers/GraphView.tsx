@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 
 import type { SerializedValue } from "@/types/execution";
 import { formatValue } from "@/utils/format";
+import { signatureOf, useStaggerChildren } from "@/animations";
 
 interface GraphViewProps {
   name: string;
@@ -19,9 +19,8 @@ const NODE_R = 18;
 
 /**
  * Renders an adjacency-list dict ({ node: [neighbors] }) as a directed graph
- * using a simple circular layout. Robust for the small graphs we visualize and
- * avoids a physics simulation. Edges are drawn with arrowheads to show
- * direction; undirected graphs simply show both directions.
+ * using a circular layout — robust for small graphs without a physics sim.
+ * Edges carry arrowheads to show direction; nodes fade in with a stagger.
  */
 export function GraphView({ name, value, highlighted }: GraphViewProps) {
   const entries = (value.value as [SerializedValue, SerializedValue][]) ?? [];
@@ -49,6 +48,11 @@ export function GraphView({ name, value, highlighted }: GraphViewProps) {
     return { nodes: labels.map((l) => ({ label: l, ...pos.get(l)! })), edges: e };
   }, [entries]);
 
+  const svgRef = useStaggerChildren<SVGSVGElement>(signatureOf(nodes.map((n) => n.label)), {
+    selector: "g.av-node",
+    fadeOnly: true,
+  });
+
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
@@ -56,7 +60,7 @@ export function GraphView({ name, value, highlighted }: GraphViewProps) {
         <span className="text-xs text-zinc-500">graph · {nodes.length} nodes</span>
       </div>
 
-      <svg width={W} height={H} className="block">
+      <svg ref={svgRef} width={W} height={H} className="block">
         <defs>
           <marker
             id="arrow"
@@ -93,13 +97,8 @@ export function GraphView({ name, value, highlighted }: GraphViewProps) {
             />
           );
         })}
-        {nodes.map((n, i) => (
-          <motion.g
-            key={n.label}
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: Math.min(i * 0.04, 0.4), type: "spring", stiffness: 400, damping: 26 }}
-          >
+        {nodes.map((n) => (
+          <g key={n.label} className="av-node">
             <circle
               cx={n.x}
               cy={n.y}
@@ -120,7 +119,7 @@ export function GraphView({ name, value, highlighted }: GraphViewProps) {
             >
               {n.label}
             </text>
-          </motion.g>
+          </g>
         ))}
       </svg>
     </div>

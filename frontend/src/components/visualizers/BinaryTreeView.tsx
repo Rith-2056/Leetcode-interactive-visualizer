@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 
 import type { SerializedValue, TreeNodeValue } from "@/types/execution";
 import { formatValue } from "@/utils/format";
 import { layoutTree } from "@/utils/treeLayout";
+import { signatureOf, useStaggerChildren } from "@/animations";
 
 interface BinaryTreeViewProps {
   name: string;
@@ -13,19 +13,20 @@ interface BinaryTreeViewProps {
   highlighted: boolean;
 }
 
-const NODE_R = 18; // node radius, matched to the SVG/box sizing below
+const NODE_R = 18;
 
 /**
  * Renders a binary tree with positioned nodes and SVG edges. Layout is memoized
- * on the tree payload so we only recompute when the structure actually changes.
+ * on the tree payload; nodes fade in (no transform, to keep SVG coordinates
+ * intact) with a stagger whenever the structure changes.
  */
 export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps) {
   const tree = value.value as TreeNodeValue | null;
-
-  const layout = useMemo(
-    () => layoutTree(tree, (n) => formatValue(n.val)),
-    [tree],
-  );
+  const layout = useMemo(() => layoutTree(tree, (n) => formatValue(n.val)), [tree]);
+  const svgRef = useStaggerChildren<SVGSVGElement>(signatureOf(layout.nodes.map((n) => n.label)), {
+    selector: "g.av-node",
+    fadeOnly: true,
+  });
 
   if (!tree) {
     return (
@@ -46,7 +47,7 @@ export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps
       </div>
 
       <div className="overflow-auto">
-        <svg width={layout.width} height={layout.height} className="block">
+        <svg ref={svgRef} width={layout.width} height={layout.height} className="block">
           {layout.edges.map((e) => {
             const a = byRef.get(e.from);
             const b = byRef.get(e.to);
@@ -64,12 +65,7 @@ export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps
             );
           })}
           {layout.nodes.map((n, i) => (
-            <motion.g
-              key={n.ref}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: Math.min(i * 0.02, 0.3), type: "spring", stiffness: 400, damping: 26 }}
-            >
+            <g key={n.ref} className="av-node">
               <circle
                 cx={n.x}
                 cy={n.y}
@@ -90,7 +86,7 @@ export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps
               >
                 {n.label}
               </text>
-            </motion.g>
+            </g>
           ))}
         </svg>
       </div>

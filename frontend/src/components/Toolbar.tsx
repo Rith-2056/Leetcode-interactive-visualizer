@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import anime from "animejs";
+
 import { Button } from "@/ui/Button";
 import { SAMPLE_PROBLEMS, type SampleProblem } from "@/lib/sampleProblems";
 import type { Theme } from "@/hooks/useTheme";
@@ -24,10 +27,29 @@ export function Toolbar({
   onToggleTheme,
   onHelp,
 }: ToolbarProps) {
+  const glyphRef = useRef<HTMLDivElement>(null);
+
+  // A gentle, continuous float on the brand mark — a small sign of life.
+  useEffect(() => {
+    const el = glyphRef.current;
+    if (!el) return;
+    const animation = anime({
+      targets: el,
+      translateY: [0, -2.5, 0],
+      duration: 3200,
+      easing: "easeInOutSine",
+      loop: true,
+    });
+    return () => animation.pause();
+  }, []);
+
   return (
     <header className="flex items-center gap-4 border-b border-surface-border bg-surface/60 px-5 py-3 backdrop-blur">
       <div className="flex items-center gap-2">
-        <div className="grid h-7 w-7 place-items-center rounded-lg bg-accent text-sm font-bold text-white shadow-glow">
+        <div
+          ref={glyphRef}
+          className="grid h-7 w-7 place-items-center rounded-lg bg-accent text-sm font-bold text-white shadow-glow"
+        >
           ƒ
         </div>
         <span className="text-sm font-semibold tracking-tight text-zinc-100">AlgoVision</span>
