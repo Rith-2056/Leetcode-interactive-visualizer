@@ -11,21 +11,22 @@ interface CodeEditorProps {
   activeLine: number | null;
   /** Locks editing while a trace is playing. */
   readOnly: boolean;
+  /** Active app theme — selects the matching Monaco palette. */
+  theme: "dark" | "light";
 }
-
-const THEME = "algovision-dark";
 
 /**
  * Monaco wrapper that owns syntax highlighting and the moving "current line"
  * decoration. The decoration is imperative (Monaco's model) so it updates
  * without re-mounting the editor each step.
  */
-export function CodeEditor({ value, onChange, activeLine, readOnly }: CodeEditorProps) {
+export function CodeEditor({ value, onChange, activeLine, readOnly, theme }: CodeEditorProps) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null);
+  const monacoTheme = theme === "light" ? "algovision-light" : "algovision-dark";
 
   const handleBeforeMount = (monaco: Monaco) => {
-    monaco.editor.defineTheme(THEME, {
+    monaco.editor.defineTheme("algovision-dark", {
       base: "vs-dark",
       inherit: true,
       rules: [],
@@ -34,6 +35,17 @@ export function CodeEditor({ value, onChange, activeLine, readOnly }: CodeEditor
         "editor.lineHighlightBorder": "#00000000",
         "editorLineNumber.foreground": "#3f3f5a",
         "editorLineNumber.activeForeground": "#a78bfa",
+      },
+    });
+    monaco.editor.defineTheme("algovision-light", {
+      base: "vs",
+      inherit: true,
+      rules: [],
+      colors: {
+        "editor.background": "#ffffff",
+        "editor.lineHighlightBorder": "#00000000",
+        "editorLineNumber.foreground": "#c4c4cf",
+        "editorLineNumber.activeForeground": "#7c5cff",
       },
     });
   };
@@ -70,7 +82,7 @@ export function CodeEditor({ value, onChange, activeLine, readOnly }: CodeEditor
     <Editor
       height="100%"
       language="python"
-      theme={THEME}
+      theme={monacoTheme}
       value={value}
       beforeMount={handleBeforeMount}
       onMount={handleMount}

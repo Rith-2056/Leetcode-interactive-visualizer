@@ -131,4 +131,32 @@ def solve(level_order):
     return max_depth(nodes[0])
 `,
   },
+  {
+    id: "bfs-graph",
+    name: "Graph BFS",
+    description: "Breadth-first traversal of an adjacency list.",
+    entrypoint: "solve",
+    args: [5, [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4], [3, 4]]],
+    code: `def bfs(graph, start):
+    visited = set()
+    queue = [start]
+    order = []
+    while queue:
+        node = queue.pop(0)
+        if node in visited:
+            continue
+        visited.add(node)
+        order.append(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                queue.append(neighbor)
+    return order
+
+def solve(n, edges):
+    graph = {i: [] for i in range(n)}
+    for a, b in edges:
+        graph[a].append(b)
+    return bfs(graph, 0)
+`,
+  },
 ];

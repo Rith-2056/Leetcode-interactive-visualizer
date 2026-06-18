@@ -7,6 +7,37 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
+/* Dark theme (default). Values are space-separated RGB triplets. */
+.dark {
+  --bg: 10 10 15;
+  --bg-subtle: 15 15 23;
+  --surface: 21 21 31;
+  --surface-raised: 28 28 42;
+  --surface-border: 38 38 58;
+  /* Greyscale: 100 = primary text … 600 = faint. */
+  --z100: 244 244 245;
+  --z200: 228 228 231;
+  --z300: 212 212 216;
+  --z400: 161 161 170;
+  --z500: 113 113 122;
+  --z600: 82 82 91;
+}
+
+/* Light theme — the greyscale inverts so existing classes stay readable. */
+.light {
+  --bg: 248 248 252;
+  --bg-subtle: 238 238 244;
+  --surface: 255 255 255;
+  --surface-raised: 243 243 248;
+  --surface-border: 226 226 236;
+  --z100: 24 24 27;
+  --z200: 39 39 42;
+  --z300: 63 63 70;
+  --z400: 82 82 91;
+  --z500: 113 113 122;
+  --z600: 168 168 178;
+}
+
 html,
 body {
   height: 100%;
@@ -39,7 +70,7 @@ body {
   background: linear-gradient(
     to right,
     #7c5cff var(--progress, 0%),
-    #26263a var(--progress, 0%)
+    rgb(var(--surface-border)) var(--progress, 0%)
   );
   cursor: pointer;
 }
@@ -61,12 +92,12 @@ body {
   box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.4);
 }
 
-/* Thin, unobtrusive scrollbars on dark surfaces. */
+/* Thin, unobtrusive scrollbars. */
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #26263a;
+  background: rgb(var(--surface-border));
   border-radius: 9999px;
 }

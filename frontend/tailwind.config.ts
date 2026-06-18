@@ -1,33 +1,40 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Design tokens for AlgoVision. The palette leans on a deep, near-black
- * background with a single vivid accent (indigo/violet) — inspired by Linear,
- * Vercel and Raycast. Surfaces use subtle elevation rather than hard borders.
+ * Design tokens for AlgoVision.
+ *
+ * Colours resolve to CSS variables (space-separated RGB triplets) so the entire
+ * palette can flip between dark and light themes without touching component
+ * markup. We also remap Tailwind's `zinc` scale to variables: existing
+ * `text-zinc-*` usages then invert automatically per theme.
  */
+const v = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
   darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        bg: {
-          DEFAULT: "#0a0a0f",
-          subtle: "#0f0f17",
-        },
+        bg: { DEFAULT: v("--bg"), subtle: v("--bg-subtle") },
         surface: {
-          DEFAULT: "#15151f",
-          raised: "#1c1c2a",
-          border: "#26263a",
+          DEFAULT: v("--surface"),
+          raised: v("--surface-raised"),
+          border: v("--surface-border"),
         },
-        accent: {
-          DEFAULT: "#7c5cff",
-          soft: "#a78bfa",
-          muted: "#312e81",
-        },
+        accent: { DEFAULT: "#7c5cff", soft: "#a78bfa", muted: "#312e81" },
         success: "#34d399",
         danger: "#f87171",
         warning: "#fbbf24",
+        // Themed greyscale — same class names, theme-aware values.
+        zinc: {
+          100: v("--z100"),
+          200: v("--z200"),
+          300: v("--z300"),
+          400: v("--z400"),
+          500: v("--z500"),
+          600: v("--z600"),
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

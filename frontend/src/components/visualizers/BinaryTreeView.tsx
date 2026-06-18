@@ -58,7 +58,7 @@ export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps
                 y1={a.y}
                 x2={b.x}
                 y2={b.y}
-                stroke="#26263a"
+                className="stroke-surface-border"
                 strokeWidth={2}
               />
             );
@@ -74,8 +74,11 @@ export function BinaryTreeView({ name, value, highlighted }: BinaryTreeViewProps
                 cx={n.x}
                 cy={n.y}
                 r={NODE_R}
-                fill={highlighted && i === 0 ? "#7c5cff" : "#1c1c2a"}
-                stroke={highlighted && i === 0 ? "#a78bfa" : "#26263a"}
+                className={
+                  highlighted && i === 0
+                    ? "fill-accent stroke-accent-soft"
+                    : "fill-surface-raised stroke-surface-border"
+                }
                 strokeWidth={2}
               />
               <text

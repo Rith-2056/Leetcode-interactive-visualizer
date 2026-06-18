@@ -4,10 +4,12 @@ Paste Python, provide inputs, and **watch your algorithm execute one line at a
 time** — a blend of NeetCode animations, Python Tutor, and a VS Code debugger
 with a polished, premium UI.
 
-> **Status: Phase 1 complete + visual core of Phase 2.**
+> **Status: Phases 1–3 complete + a polished, intuitive UX layer.**
 > End-to-end working: editor → sandboxed tracer → snapshot stream → animated
-> playback with variable inspector, array/stack/hash-map visualizers, call
-> stack, and per-step explanations.
+> playback. Visualizers for **arrays, stacks, hash maps, linked lists, binary
+> trees, and graphs**; a live variable inspector, call stack, and per-step
+> explanations. Custom test-case inputs, light/dark themes, keyboard shortcuts,
+> and an in-app help guide.
 
 ---
 
@@ -80,8 +82,8 @@ backend/
 frontend/
   src/
     api/          typed fetch client (single network seam)
-    components/   editor, controls, panels, visualizers/
-    hooks/        useExecution (request lifecycle), usePlayback (timeline)
+    components/   editor, controls, test-case, help, panels, visualizers/
+    hooks/        useExecution · usePlayback · useTheme · useKeyboardShortcuts
     lib/          sample problems
     types/        wire types mirroring the backend
     ui/           Button, Panel, cn primitives
@@ -112,8 +114,13 @@ npm install
 npm run dev                                  # http://localhost:3000
 ```
 
-Pick a sample problem (Valid Parentheses, Two Sum, Bubble Sort, Fibonacci),
-hit **Run**, and use the transport bar (play/pause/step/scrub, 0.25×–4×).
+Pick a sample problem, edit the **Test Case** (function name + JSON args) or
+paste your own Python, hit **Run**, and use the transport bar
+(play/pause/step/scrub, 0.25×–4×).
+
+**Keyboard shortcuts:** `Space` play/pause · `←/→` step · `R` reset ·
+`⌘/Ctrl+Enter` run. Toggle light/dark with the ☀/☾ button; the `?` button opens
+an in-app guide.
 
 ---
 
@@ -133,11 +140,12 @@ backlog.
 
 - **Phase 1 ✅** Project setup · Monaco editor · playback controls · execution
   engine · live line highlighting.
-- **Phase 2 ✅ (visual core)** Variable inspector · array & stack & hash-map
-  visualizers · call stack. *Next:* swap/index highlighting, sliding-window &
-  two-pointer overlays.
-- **Phase 3** Linked lists · binary trees · graphs (the serializer already
-  emits `ListNode`/`TreeNode` refs to build on).
-- **Phase 4** OS-level sandbox hardening · multi-language (Java/C++/JS) ·
-  AI explanations · accounts · shareable sessions · timeline virtualization.
+- **Phase 2 ✅** Variable inspector · array, stack & hash-map visualizers ·
+  call stack · per-step explanations.
+- **Phase 3 ✅** Linked lists · binary trees · graphs (BFS/DFS-ready).
+- **UX layer ✅** Custom test-case inputs · light/dark themes · keyboard
+  shortcuts · in-app help · onboarding & error/truncation states.
+- **Phase 4 (next)** OS-level sandbox hardening · multi-language (Java/C++/JS) ·
+  AI explanations · accounts · shareable sessions · timeline virtualization ·
+  swap/index & two-pointer/sliding-window overlays.
 ```
