@@ -4,6 +4,8 @@ import type { Snapshot } from "@/types/execution";
 import { ArrayView } from "@/components/visualizers/ArrayView";
 import { StackView } from "@/components/visualizers/StackView";
 import { HashMapView } from "@/components/visualizers/HashMapView";
+import { LinkedListView } from "@/components/visualizers/LinkedListView";
+import { BinaryTreeView } from "@/components/visualizers/BinaryTreeView";
 
 interface VisualizationPanelProps {
   snapshot: Snapshot | null;
@@ -26,9 +28,8 @@ export function VisualizationPanel({ snapshot }: VisualizationPanelProps) {
   const changed = new Set(snapshot.changed_variables);
   const entries = Object.entries(snapshot.variables);
 
-  const visuals = entries.filter(
-    ([, v]) => v.type === "list" || v.type === "tuple" || v.type === "dict",
-  );
+  const VISUALIZABLE = new Set(["list", "tuple", "dict", "ListNode", "TreeNode"]);
+  const visuals = entries.filter(([, v]) => VISUALIZABLE.has(v.type));
 
   if (visuals.length === 0) {
     return <p className="text-sm text-zinc-500">No visualizable structures in scope.</p>;
@@ -38,12 +39,17 @@ export function VisualizationPanel({ snapshot }: VisualizationPanelProps) {
     <div className="space-y-6">
       {visuals.map(([name, value]) => {
         const highlighted = changed.has(name);
-        // Name heuristic distinguishes a stack from a plain array.
-        const looksLikeStack = /stack/i.test(name);
+        if (value.type === "ListNode") {
+          return <LinkedListView key={name} name={name} value={value} highlighted={highlighted} />;
+        }
+        if (value.type === "TreeNode") {
+          return <BinaryTreeView key={name} name={name} value={value} highlighted={highlighted} />;
+        }
         if (value.type === "dict") {
           return <HashMapView key={name} name={name} value={value} highlighted={highlighted} />;
         }
-        if (looksLikeStack) {
+        // Name heuristic distinguishes a stack from a plain array.
+        if (/stack/i.test(name)) {
           return <StackView key={name} name={name} value={value} highlighted={highlighted} />;
         }
         return <ArrayView key={name} name={name} value={value} highlighted={highlighted} />;

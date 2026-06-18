@@ -69,15 +69,57 @@ def serialize(value: Any, _depth: int = 0) -> SerializedValue:
             )
         return SerializedValue(type="dict", value=entries, ref=_ref(value))
 
-    # Common LeetCode helper classes get structured handling so later phases can
-    # render linked lists / trees. We detect by attribute shape, not import.
+    # Common LeetCode helper classes get structured handling so the frontend can
+    # render linked lists / trees. We detect by attribute shape, not by import,
+    # so any class with the conventional fields works.
     cls = type(value).__name__
     if hasattr(value, "val") and hasattr(value, "next"):
-        return SerializedValue(type="ListNode", value=_safe_repr(value), ref=_ref(value))
+        return _serialize_linked_list(value)
     if hasattr(value, "val") and (hasattr(value, "left") or hasattr(value, "right")):
-        return SerializedValue(type="TreeNode", value=_safe_repr(value), ref=_ref(value))
+        return _serialize_tree(value)
 
     return SerializedValue(type=cls, value=_safe_repr(value), ref=_ref(value))
+
+
+def _serialize_linked_list(head: Any) -> SerializedValue:
+    """Walk the `.next` chain into a flat node list, detecting cycles."""
+    nodes: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    cyclic = False
+    current = head
+    while current is not None and len(nodes) < _MAX_ITEMS:
+        ref = _ref(current)
+        if ref in seen:
+            cyclic = True
+            break
+        seen.add(ref)
+        nodes.append(
+            {"ref": ref, "val": serialize(getattr(current, "val", None), _MAX_DEPTH).model_dump()}
+        )
+        current = getattr(current, "next", None)
+    return SerializedValue(
+        type="ListNode", ref=_ref(head), value={"nodes": nodes, "cyclic": cyclic}
+    )
+
+
+def _serialize_tree(root: Any) -> SerializedValue:
+    """Recursively serialize a binary tree, bounded by depth and visited set."""
+
+    def walk(node: Any, depth: int, seen: set[str]) -> Any:
+        if node is None or depth > _MAX_DEPTH:
+            return None
+        ref = _ref(node)
+        if ref in seen:  # guard against malformed cyclic "trees"
+            return None
+        seen.add(ref)
+        return {
+            "ref": ref,
+            "val": serialize(getattr(node, "val", None), _MAX_DEPTH).model_dump(),
+            "left": walk(getattr(node, "left", None), depth + 1, seen),
+            "right": walk(getattr(node, "right", None), depth + 1, seen),
+        }
+
+    return SerializedValue(type="TreeNode", ref=_ref(root), value=walk(root, 0, set()))
 
 
 def _safe_repr(value: Any) -> str:

@@ -1,5 +1,9 @@
 /** Presentation helpers for serialized runtime values. */
-import type { SerializedValue } from "@/types/execution";
+import type {
+  LinkedListValue,
+  SerializedValue,
+  TreeNodeValue,
+} from "@/types/execution";
 
 /** Render a SerializedValue as a compact, human-readable string. */
 export function formatValue(v: SerializedValue): string {
@@ -26,6 +30,16 @@ export function formatValue(v: SerializedValue): string {
       return `{${entries
         .map(([k, val]) => `${formatValue(k)}: ${formatValue(val)}`)
         .join(", ")}}`;
+    }
+    case "ListNode": {
+      const ll = v.value as LinkedListValue | null;
+      if (!ll || ll.nodes.length === 0) return "None";
+      const chain = ll.nodes.map((n) => formatValue(n.val)).join(" → ");
+      return ll.cyclic ? `${chain} → ↺` : chain;
+    }
+    case "TreeNode": {
+      const tree = v.value as TreeNodeValue | null;
+      return tree ? `TreeNode(${formatValue(tree.val)})` : "None";
     }
     default:
       return String(v.value);

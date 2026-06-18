@@ -15,6 +15,20 @@ export interface SerializedValue {
   ref: string | null;
 }
 
+/** Structured payload for a `ListNode` SerializedValue (`value` field). */
+export interface LinkedListValue {
+  nodes: { ref: string; val: SerializedValue }[];
+  cyclic: boolean;
+}
+
+/** Structured payload for a `TreeNode` SerializedValue (`value` field). */
+export interface TreeNodeValue {
+  ref: string;
+  val: SerializedValue;
+  left: TreeNodeValue | null;
+  right: TreeNodeValue | null;
+}
+
 export interface StackFrame {
   function: string;
   line: number;

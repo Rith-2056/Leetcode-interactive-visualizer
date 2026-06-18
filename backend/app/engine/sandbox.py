@@ -44,6 +44,10 @@ def build_safe_builtins() -> dict[str, object]:
     for name in _SAFE_BUILTIN_NAMES:
         if hasattr(builtins, name):
             safe[name] = getattr(builtins, name)
+    # Required so user code can define its own classes (e.g. ListNode/TreeNode);
+    # the `class` statement compiles to a __build_class__ call.
+    safe["__build_class__"] = builtins.__build_class__
+    safe["__name__"] = "__main__"
     safe["__import__"] = _guarded_import
     return safe
 

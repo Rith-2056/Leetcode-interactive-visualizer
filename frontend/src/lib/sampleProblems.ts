@@ -72,4 +72,63 @@ export const SAMPLE_PROBLEMS: SampleProblem[] = [
     return fib(n - 1) + fib(n - 2)
 `,
   },
+  {
+    id: "reverse-linked-list",
+    name: "Reverse Linked List",
+    description: "Pointer rewiring on a linked list.",
+    entrypoint: "solve",
+    args: [[1, 2, 3, 4, 5]],
+    code: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverse_list(head):
+    prev = None
+    while head:
+        nxt = head.next
+        head.next = prev
+        prev = head
+        head = nxt
+    return prev
+
+def solve(values):
+    head = None
+    for v in reversed(values):
+        head = ListNode(v, head)
+    return reverse_list(head)
+`,
+  },
+  {
+    id: "max-depth-tree",
+    name: "Max Depth of Binary Tree",
+    description: "Recursive DFS over a binary tree.",
+    entrypoint: "solve",
+    args: [[3, 9, 20, null, null, 15, 7]],
+    code: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def max_depth(root):
+    if root is None:
+        return 0
+    return 1 + max(max_depth(root.left), max_depth(root.right))
+
+def solve(level_order):
+    if not level_order:
+        return 0
+    nodes = [TreeNode(v) if v is not None else None for v in level_order]
+    kids = nodes[1:]
+    for node in nodes:
+        if node is None:
+            continue
+        if kids:
+            node.left = kids.pop(0)
+        if kids:
+            node.right = kids.pop(0)
+    return max_depth(nodes[0])
+`,
+  },
 ];
